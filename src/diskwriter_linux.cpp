@@ -131,7 +131,7 @@ int DiskWriter::GetDiskInfo(disk_entry_t *de)
       ))
     {
       strcpy(de->diskname, tPath);
-      de->disksize = *(__uint64_t *)(&info.DiskSize);
+      de->disksize = *(uint64_t *)(&info.DiskSize);
       de->blocksize = info.Geometry.BytesPerSector;
     }
     else {
@@ -146,7 +146,7 @@ int DiskWriter::GetDiskInfo(disk_entry_t *de)
 
   if (status != 0) {
     de->disknum = -1;
-    de->disksize = (__uint64_t )-1;
+    de->disksize = (uint64_t )-1;
     de->diskname[0] = 0;
     de->volnum[0] = -1;
   }
@@ -307,7 +307,7 @@ int DiskWriter::ProgramPatchEntry(PartitionEntry pe, char *key)
 #define MAX_TEST_SIZE (4*1024*1024)
 #define LOOP_COUNT 1000
 
-int DiskWriter::CorruptionTest(__uint64_t offset)
+int DiskWriter::CorruptionTest(uint64_t offset)
 {
   /*int status = 0;
   bool bWriteDone = false;
@@ -366,7 +366,7 @@ int DiskWriter::CorruptionTest(__uint64_t offset)
   return 0;
 }
 
-int DiskWriter::DiskTest(__uint64_t offset)
+int DiskWriter::DiskTest(uint64_t offset)
 {
 /*  int status = 0;
   bool bWriteDone = false;
@@ -570,7 +570,7 @@ int DiskWriter::UnmountVolume(vol_entry_t vol)
   return 0;
 }
 
-int DiskWriter::OpenDiskFile(char *oFile, __uint64_t sectors)
+int DiskWriter::OpenDiskFile(char *oFile, uint64_t sectors)
 {
   int status = 0;
   if( oFile == NULL ) {
@@ -649,7 +649,7 @@ int DiskWriter::WipeLayout()
 	return 0;
 }
 
-int DiskWriter::RawReadTest(__uint64_t offset)
+int DiskWriter::RawReadTest(uint64_t offset)
 {
  /* // Set up the overlapped structure
   OVERLAPPED ovlp;
@@ -691,11 +691,11 @@ int DiskWriter::RawReadTest(__uint64_t offset)
 	return 0;
 }
 
-int DiskWriter::FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, __uint64_t sectors, uint8_t partNum)
+int DiskWriter::FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, uint64_t sectors, uint8_t partNum)
 {  // Set up the overlapped structure
  /* OVERLAPPED ovlWrite, ovlRead;
   int stride;
-  __uint64_t sec;
+  uint64_t sec;
   uint32_t bytesOut = 0;
   uint32_t bytesRead = 0;
   int readStatus = 0;
@@ -804,11 +804,11 @@ int DiskWriter::FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sect
 	return 0;
 }
 
-int DiskWriter::GetRawDiskSize( __uint64_t *ds)
+int DiskWriter::GetRawDiskSize( uint64_t *ds)
 {
  /* int status = 0;
   // Start at 512 MB for good measure to get us to size quickly
-  __uint64_t diff = DISK_SECTOR_SIZE * 1024;
+  uint64_t diff = DISK_SECTOR_SIZE * 1024;
 
   // Read data from various sectors till we figure out how big disk is
   if( ds == NULL || hDisk == -1) {

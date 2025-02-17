@@ -36,7 +36,7 @@ public:
   ~XMLParser();
   int LoadXML(char * fname, const char *imgdir = NULL);
   int ParseXMLString(char *line, const char *key, char *value) const;
-  int ParseXMLInteger(char *line, const char *key, __uint64_t *value) const;
+  int ParseXMLInteger(char *line, const char *key, uint64_t *value) const;
   char *StringReplace(char *inp, const char *find, const char *rep) const;
   char *StringSetValue(char *key, const char *keyName, char *value) const;
 
@@ -49,6 +49,6 @@ protected:
   const char *imgDir;
 
 
-  int ParseXMLEvaluate(char *expr, __uint64_t &value) const;
+  int ParseXMLEvaluate(char *expr, uint64_t &value) const;
 
 };

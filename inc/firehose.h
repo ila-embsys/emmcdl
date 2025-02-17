@@ -70,7 +70,7 @@ public:
 
   int DeviceReset(void);
   int DeviceNop();
-  int FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, __uint64_t sectors, uint8_t partNum);
+  int FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, uint64_t sectors, uint8_t partNum);
   int ProgramPatchEntry(PartitionEntry pe, char *key);
   int ProgramRawCommand(char *key);
   int PeekLogBuf(int64_t start, int64_t size);
@@ -89,7 +89,7 @@ private:
   int ReadStatus(void);
 
   SerialPort *sport;
-  __uint64_t diskSectors;
+  uint64_t diskSectors;
   uint32_t speedWidth;
   struct timespec startTs;
   bool m_read_back_verify;

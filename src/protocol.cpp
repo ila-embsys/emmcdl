@@ -171,7 +171,7 @@ int Protocol::ReadGPT(bool debug)
 }
 
 
-__uint64_t Protocol::GetNumDiskSectors()
+uint64_t Protocol::GetNumDiskSectors()
 {
   return disk_size / DISK_SECTOR_SIZE;
 
@@ -196,7 +196,7 @@ int Protocol::WriteSimlockData(unsigned char *writeBuffer, int64_t writeOffset, 
   return -1;
 }
 
-int Protocol::DumpDiskContents(__uint64_t start_sector, __uint64_t num_sectors, char *szOutFile, uint8_t partNum, char *szPartName)
+int Protocol::DumpDiskContents(uint64_t start_sector, uint64_t num_sectors, char *szOutFile, uint8_t partNum, char *szPartName)
 {
   int status = 0;
 
@@ -229,7 +229,7 @@ int Protocol::DumpDiskContents(__uint64_t start_sector, __uint64_t num_sectors, 
   return status;
 }
 
-int Protocol::WipeDiskContents(__uint64_t start_sector, __uint64_t num_sectors, char *szPartName)
+int Protocol::WipeDiskContents(uint64_t start_sector, uint64_t num_sectors, char *szPartName)
 {
   PartitionEntry pe;
   char *cmd_pkt;

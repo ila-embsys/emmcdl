@@ -55,12 +55,12 @@ typedef struct {
   int32_t header_size;
   int32_t crc_header;
   int32_t reserved;
-  __uint64_t current_lba;
-  __uint64_t backup_lba;
-  __uint64_t first_lba;
-  __uint64_t last_lba;
+  uint64_t current_lba;
+  uint64_t backup_lba;
+  uint64_t first_lba;
+  uint64_t last_lba;
   char    disk_guid[16];
-  __uint64_t partition_lba;
+  uint64_t partition_lba;
   int32_t num_entries;
   int32_t entry_size;
   int32_t crc_partition;
@@ -70,23 +70,23 @@ typedef struct {
 typedef struct {
   char    type_guid[16];
   char    unique_guid[16];
-  __uint64_t first_lba;
-  __uint64_t last_lba;
-  __uint64_t attributes;
+  uint64_t first_lba;
+  uint64_t last_lba;
+  uint64_t attributes;
   char part_name[72];
 } gpt_entry_t;
 
 typedef struct {
   cmdEnum eCmd;
-  __uint64_t start_sector;
-  __uint64_t offset;
-  __uint64_t num_sectors;
+  uint64_t start_sector;
+  uint64_t offset;
+  uint64_t num_sectors;
   uint8_t physical_partition_number;
-  __uint64_t patch_value;
-  __uint64_t patch_offset;
-  __uint64_t patch_size;
-  __uint64_t crc_start;
-  __uint64_t crc_size;
+  uint64_t patch_value;
+  uint64_t patch_offset;
+  uint64_t patch_size;
+  uint64_t crc_start;
+  uint64_t crc_size;
   char  filename[MAX_PATH];
   char  label[MAX_PATH];
 } PartitionEntry;
@@ -99,7 +99,7 @@ class Partition:public XMLParser {
 public:
   int num_entries;
 
-  Partition(__uint64_t ds=0)
+  Partition(uint64_t ds=0)
   {
 	  num_entries = 0; cur_action = 0; d_sectors = ds;
           bVerbose = false;
@@ -118,14 +118,14 @@ public:
 
 private:
   int cur_action;
-  __uint64_t d_sectors;
+  uint64_t d_sectors;
 
   int Reflect(int data, int len);
   int ParseXMLOptions();
   int ParsePathList();
   //int ParseXMLString(char *line, const char *key, char *value);
-  int ParseXMLInt64(char *line, const char *key, __uint64_t &value, PartitionEntry *pe) const;
-  int ParseXMLEvaluate(char *expr, __uint64_t &value, PartitionEntry *pe) const;
+  int ParseXMLInt64(char *line, const char *key, uint64_t &value, PartitionEntry *pe) const;
+  int ParseXMLEvaluate(char *expr, uint64_t &value, PartitionEntry *pe) const;
   bool CheckEmptyLine(char *str) const;
   int Log(const char *str,...);
   bool bVerbose;

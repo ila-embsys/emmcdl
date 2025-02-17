@@ -176,7 +176,7 @@ char *XMLParser::StringReplace(char *inp, const char *find, const char *rep) con
   return inp;
 }
 
-int XMLParser::ParseXMLEvaluate(char *expr, __uint64_t &value) const
+int XMLParser::ParseXMLEvaluate(char *expr, uint64_t &value) const
 {
   // Parse simple expression understands -+/*, NUM_DISK_SECTORS,CRC32(offset:length)
   char *sptr, *sptr1, *sptr2;
@@ -186,7 +186,7 @@ int XMLParser::ParseXMLEvaluate(char *expr, __uint64_t &value) const
   sptr = strstr(expr,"CRC32");
   if( sptr != NULL ) {
     char tmp[MAX_STRING_LEN];
-    __uint64_t crc;
+    uint64_t crc;
     sptr1 = strstr(sptr,"(") + 1;
     if( sptr1 == NULL ) {
       return EINVAL;
@@ -287,7 +287,7 @@ int XMLParser::ParseXMLString(char *line, const char *key, char *value) const
   return 0;
 }
 
-int XMLParser::ParseXMLInteger(char *line,const char *key, __uint64_t *value) const
+int XMLParser::ParseXMLInteger(char *line,const char *key, uint64_t *value) const
 {
   // Check to make sure none of the parameters are null
   if( line == NULL || key == NULL || value == NULL ) {

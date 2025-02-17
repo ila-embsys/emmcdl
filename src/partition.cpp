@@ -163,7 +163,7 @@ int Partition::ParseXMLString(char *line, const char *key, char *value)
   return 0;
 }
 #endif
-int Partition::ParseXMLEvaluate(char *expr, __uint64_t &value, PartitionEntry *pe) const
+int Partition::ParseXMLEvaluate(char *expr, uint64_t &value, PartitionEntry *pe) const
 {
   // Parse simple expression understands -+/*, NUM_DISK_SECTORS,CRC32(offset:length)
   char disk_sectors[64];
@@ -240,7 +240,7 @@ int Partition::ParseXMLEvaluate(char *expr, __uint64_t &value, PartitionEntry *p
   return 0;
 }
 
-int Partition::ParseXMLInt64(char *line, const char *key, __uint64_t &value, PartitionEntry *pe) const
+int Partition::ParseXMLInt64(char *line, const char *key, uint64_t &value, PartitionEntry *pe) const
 {
   char tmp[MAX_STRING_LEN];
   char *eptr;
@@ -336,7 +336,7 @@ int Partition::ParseXMLKey(char *key, PartitionEntry *pe)
     Log("start_sector: %d ",  pe->start_sector);
   }
 	
-  __uint64_t partNum;
+  uint64_t partNum;
   if( ParseXMLInt64(key,"physical_partition_number", partNum, pe) != 0 ) {
     Log("physical_partition_number missing in XML line\n");
     return ERROR_INVALID_DATA;
@@ -349,7 +349,7 @@ int Partition::ParseXMLKey(char *key, PartitionEntry *pe)
     Log("num_partition_sectors: %d ", pe->num_sectors);
     // If zero then write out all sectors for size of file
   } else {
-    pe->num_sectors = (__uint64_t )-1;
+    pe->num_sectors = (uint64_t )-1;
   }
 
   if( pe->eCmd == CMD_PATCH || pe->eCmd == CMD_PROGRAM || pe->eCmd == CMD_READ || pe->eCmd == CMD_SIMLOCK) {
@@ -371,7 +371,7 @@ int Partition::ParseXMLKey(char *key, PartitionEntry *pe)
     if( ParseXMLInt64(key,"file_sector_offset", pe->offset, pe) == 0 ) {
 			Log("file_sector_offset: %d ", pe->offset);
     } else {
-      pe->offset = (__uint64_t )-1;
+      pe->offset = (uint64_t )-1;
     }
 	
     // The following entries should only be used in patching

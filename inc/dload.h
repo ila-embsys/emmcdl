@@ -149,13 +149,13 @@ public:
   int WriteRawProgramFile(char *szXMLFile);
   int GetDloadParams(unsigned char *rsp, int len);
   int IsDeviceInDload(void);
-  int WipeDiskContents(__uint64_t start_sector, __uint64_t num_sectors);
+  int WipeDiskContents(uint64_t start_sector, uint64_t num_sectors);
 
 private:
   void HexToByte(const char *hex, unsigned char *bin, int len);
   uint32_t HexRunAddress(char *filename);
   uint32_t HexDataLength(char *filename);
-  __uint64_t GetNumDiskSectors();
+  uint64_t GetNumDiskSectors();
   int ProgramPartitionEntry(PartitionEntry pe);
 
   SerialPort *sport;

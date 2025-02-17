@@ -169,7 +169,7 @@ int LoadFlashProg(char *mprgFile)
   return status;
 }
 
-int EraseDisk(__uint64_t start, __uint64_t num, int dnum, char *szPartName)
+int EraseDisk(uint64_t start, uint64_t num, int dnum, char *szPartName)
 {
   int status = 0;
 
@@ -495,7 +495,7 @@ int EDownloadProgram(char *szSingleImage, char **szXMLFile, char **szimgDir)
 }
 
 
-int RawDiskProgram(char **pFile, char *oFile, __uint64_t dnum)
+int RawDiskProgram(char **pFile, char *oFile, uint64_t dnum)
 {
   DiskWriter dw;
   int status = 0;
@@ -523,7 +523,7 @@ int RawDiskProgram(char **pFile, char *oFile, __uint64_t dnum)
   return status;
 }
 
-int RawDiskTest(int dnum, __uint64_t offset)
+int RawDiskTest(int dnum, uint64_t offset)
 {
   DiskWriter dw;
   int status = 0;
@@ -544,7 +544,7 @@ int RawDiskTest(int dnum, __uint64_t offset)
   return status;
 }
 
-int RawDiskDump(__uint64_t start, __uint64_t num, char *oFile, int dnum, char *szPartName)
+int RawDiskDump(uint64_t start, uint64_t num, char *oFile, int dnum, char *szPartName)
 {
   DiskWriter dw;
   int status = 0;
@@ -572,7 +572,7 @@ int RawDiskDump(__uint64_t start, __uint64_t num, char *oFile, int dnum, char *s
   return status;
 }
 
-int LogDump(__uint64_t start, __uint64_t num)
+int LogDump(uint64_t start, uint64_t num)
 {
 	  int status = 0;
 
@@ -612,9 +612,9 @@ int main(int argc, char * argv[])
   char *szSingleImage = NULL;
   char *szPartName = NULL;
   emmc_cmd_e cmd = EMMC_CMD_NONE;
-  __uint64_t uiStartSector = 0;
-  __uint64_t uiNumSectors = 0;
-  __uint64_t uiOffset = 0x40000000;
+  uint64_t uiStartSector = 0;
+  uint64_t uiNumSectors = 0;
+  uint64_t uiOffset = 0x40000000;
   uint32_t dwGPP1=0,dwGPP2=0,dwGPP3=0,dwGPP4=0;
   bool bGppQuiet = false;
 
@@ -707,7 +707,7 @@ int main(int argc, char * argv[])
     if (strcasecmp(argv[i], "-t") == 0) {
       cmd = EMMC_CMD_TEST;
       if( i < argc ) {
-        uiOffset = (__uint64_t )(atoi(argv[++i])) * 512;
+        uiOffset = (uint64_t )(atoi(argv[++i])) * 512;
       }
     }
     if (strcasecmp(argv[i], "-g") == 0) {

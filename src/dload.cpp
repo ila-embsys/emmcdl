@@ -445,7 +445,7 @@ int Dload::CreateGPP(uint32_t dwGPP1, uint32_t dwGPP2, uint32_t dwGPP3, uint32_t
 }
 
 
-__uint64_t Dload::GetNumDiskSectors()
+uint64_t Dload::GetNumDiskSectors()
 {
   unsigned char stream_dload[38] = {EHOST_STREAM_DLOAD_REQ,0x0};
   unsigned char rsp[128] = {0};
@@ -493,7 +493,7 @@ int Dload::ProgramPartitionEntry(PartitionEntry pe)
   return status;
 }
 
-int Dload::WipeDiskContents(__uint64_t start_sector, __uint64_t num_sectors)
+int Dload::WipeDiskContents(uint64_t start_sector, uint64_t num_sectors)
 {
   PartitionEntry pe;
   memset(&pe,0,sizeof(pe));

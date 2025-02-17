@@ -665,7 +665,7 @@ void *WriterThread(void *arg) {
    pthread_exit(&ret);
 }
 
-int Firehose::FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, __uint64_t sectors, uint8_t partNum)
+int Firehose::FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, uint64_t sectors, uint8_t partNum)
 {
    ssize_t dwBytesRead = 0;
    bool bReadStatus = true;

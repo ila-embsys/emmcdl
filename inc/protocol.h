@@ -37,22 +37,22 @@ public:
   Protocol();
   virtual ~Protocol();
 
-  int DumpDiskContents(__uint64_t start_sector, __uint64_t num_sectors, char *szOutFile, uint8_t partNum, char *szPartName);
-  int WipeDiskContents(__uint64_t start_sector, __uint64_t num_sectors, char *szPartName);
+  int DumpDiskContents(uint64_t start_sector, uint64_t num_sectors, char *szOutFile, uint8_t partNum, char *szPartName);
+  int WipeDiskContents(uint64_t start_sector, uint64_t num_sectors, char *szPartName);
 
   int ReadGPT(bool debug);
   int WriteGPT(char *szPartName, char *szBinFile);
   void EnableVerbose(void);
   int GetDiskSectorSize(void);
   void SetDiskSectorSize(int size);
-  __uint64_t GetNumDiskSectors(void);
+  uint64_t GetNumDiskSectors(void);
   int GetDiskHandle(void);
   virtual int WriteSimlockData(unsigned char *writeBuffer, int64_t writeOffset, uint32_t writeBytes, uint32_t *bytesWritten, uint8_t partNum);
 
   virtual int DeviceReset(void) = 0;
   virtual int WriteData(unsigned char *writeBuffer, int64_t writeOffset, uint32_t writeBytes, uint32_t *bytesWritten, uint8_t partNum) = 0;
   virtual int ReadData(unsigned char *readBuffer, int64_t readOffset, uint32_t readBytes, uint32_t *bytesRead, uint8_t partNum) = 0;
-  virtual int FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, __uint64_t sectors, uint8_t partNum) = 0;
+  virtual int FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, uint64_t sectors, uint8_t partNum) = 0;
   virtual int ProgramRawCommand(char *key) = 0;
   virtual int ProgramPatchEntry(PartitionEntry pe, char *key) = 0;
 
@@ -63,7 +63,7 @@ protected:
 
   gpt_header_t gpt_hdr;
   gpt_entry_t *gpt_entries;
-  __uint64_t disk_size;
+  uint64_t disk_size;
   int hDisk;
   unsigned char *buffer1;
   unsigned char *buffer2;

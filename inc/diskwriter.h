@@ -36,7 +36,7 @@ when       who     what, where, why
 typedef struct {
   int32_t	     serialnum;
   int32_t      drivetype;
-  __uint64_t volsize;
+  uint64_t volsize;
   int          disknum;
   char        fstype[MAX_PATH+1];
   char        mount[MAX_PATH+1];
@@ -45,7 +45,7 @@ typedef struct {
 } vol_entry_t;
 
 typedef struct {
-  __uint64_t disksize;
+  uint64_t disksize;
   int          blocksize;
   int          disknum;
   int          volnum[MAX_VOLUMES+1];
@@ -63,9 +63,9 @@ public:
   int WriteData(unsigned char *writeBuffer, int64_t writeOffset, uint32_t writeBytes, uint32_t *bytesWritten, uint8_t partNum);
   int ReadData(unsigned char *readBuffer, int64_t readOffset, uint32_t readBytes, uint32_t *bytesRead, uint8_t partNum);
 
-  int FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, __uint64_t sectors, uint8_t partNum=0);
+  int FastCopy(int hRead, int64_t sectorRead, int hWrite, int64_t sectorWrite, uint64_t sectors, uint8_t partNum=0);
   int OpenDevice(int dn);
-  int OpenDiskFile(char *oFile, __uint64_t sectors);
+  int OpenDiskFile(char *oFile, uint64_t sectors);
   void CloseDevice();
   int InitDiskList(bool verbose = false);
   int DeviceReset(void);
@@ -73,8 +73,8 @@ public:
   int ProgramRawCommand(char *key);
 
   // Functions for testing purposes
-  int CorruptionTest(__uint64_t offset);
-  int DiskTest(__uint64_t offset);
+  int CorruptionTest(uint64_t offset);
+  int DiskTest(uint64_t offset);
   int WipeLayout();
 
 protected:
@@ -94,6 +94,6 @@ private:
   int LockDevice();
   int UnlockDevice();
   bool IsDeviceWriteable();
-  int GetRawDiskSize(__uint64_t *ds);
-  int RawReadTest(__uint64_t offset);
+  int GetRawDiskSize(uint64_t *ds);
+  int RawReadTest(uint64_t offset);
 };
