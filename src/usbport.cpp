@@ -97,7 +97,9 @@ usb_handle *open_device(void)
 
     if(usb) return usb;
 
-    for(;;) {
+	bool wait = 0;
+
+    do {
         usb = usb_open(match_fastboot);
         if(usb) return usb;
         if(announce) {
@@ -105,7 +107,9 @@ usb_handle *open_device(void)
             fprintf(stderr,"< waiting for device >\n");
         }
         usleep(1000);
-    }
+    } while (wait);
+
+    return 0;
 }
 
 void list_devices(void) {
