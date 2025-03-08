@@ -150,12 +150,19 @@ int Sahara::ModeSwitch(int mode, bool rsp)
 
 int Sahara::LoadFlashProg(char *szFlashPrg)
 {
+  struct {
+    cmd_hdr_t read_cmd_hdr = { 0 };
+    union {
+      read_data_64_t read_data64_req = {0};
+      read_data_t read_data_req;
+    };
+  } rdbuf;
   read_data_t read_data_req = {0};
   read_data_64_t read_data64_req = {0};
   cmd_hdr_t read_cmd_hdr = { 0 };
   image_end_t read_img_end = { 0 };
   uint32_t status = 0;
-  uint32_t bytesRead = sizeof(read_data64_req);
+  uint32_t bytesRead = sizeof(rdbuf);
   uint32_t totalBytes = 0, read_data_offset = 0, read_data_len = 0;
   unsigned char dataBuf[8192];
 
@@ -169,23 +176,18 @@ int Sahara::LoadFlashProg(char *szFlashPrg)
   for(;;) {
 
     memset(&read_cmd_hdr,0,sizeof(read_cmd_hdr));
-    bytesRead = sizeof(read_cmd_hdr);
+    memset(&read_data_req, 0, sizeof(read_data_req));
+    memset(&read_data64_req, 0, sizeof(read_data64_req));
     status = sport->Read((unsigned char *)&read_cmd_hdr,&bytesRead);
 
     // Check if it is a 32-bit or 64-bit read
     if (read_cmd_hdr.cmd == SAHARA_64BIT_MEMORY_READ_DATA)
     {
-      memset(&read_data64_req, 0, sizeof(read_data64_req));
-      bytesRead = sizeof(read_data64_req);
-      status = sport->Read((unsigned char *)&read_data64_req, &bytesRead);
       read_data_offset = (uint32_t)read_data64_req.data_offset;
       read_data_len = (uint32_t)read_data64_req.data_len;
     }
     else if (read_cmd_hdr.cmd == SAHARA_READ_DATA)
     {
-      memset(&read_data_req, 0, sizeof(read_data_req));
-      bytesRead = sizeof(read_data_req);
-      status = sport->Read((unsigned char *)&read_data_req, &bytesRead);
       read_data_offset = read_data_req.data_offset;
       read_data_len = read_data_req.data_len;
     }
