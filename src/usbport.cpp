@@ -121,7 +121,7 @@ void list_devices(void) {
     usb_open(list_devices_callback);
 }
 
-int SerialPort::Open(int port) {
+int SerialPort::Open() {
   usb_handle *usb = open_device();
 
   if (usb == 0) return -ENODEV;

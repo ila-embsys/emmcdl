@@ -35,7 +35,7 @@ class SerialPort {
 public:
   SerialPort();
   ~SerialPort();
-  int Open(int port);
+  int Open();
   int EnableBinaryLog(char *szFileName);
   int Close();
   int Write(unsigned char *data, uint32_t length);

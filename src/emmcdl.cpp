@@ -64,7 +64,7 @@ int PrintHelp()
   printf("       -e <start> <num>                 Erase disk from start sector for number of sectors\n");
   printf("       -e <PartName>                    Erase the entire partition specified\n");
   printf("       -s <sectors>                     Number of sectors in disk image\n");
-  printf("       -p <port or disk>                Port or disk to program to (eg COM8, for PhysicalDrive1 use 1)\n");
+  printf("       -p <physycalpartition(disk)>     Physical partition to program to (for PhysicalDrive1 use 1)\n");
   printf("       -o <filename>                    Output filename\n");
   printf("       [<-x <*.xml> [-xd <imgdir>]>...] Program XML file to output type -o (output) -p (port or disk)\n");
   printf("       -f <flash programmer>            Flash programmer to load to IMEM eg MPRG8960.hex\n");
@@ -82,18 +82,18 @@ int PrintHelp()
   printf("       -wimei <imei>                    Write IMEI <imei>\n");
   printf("       -v                               Enable verbose output\n");
   printf("\n\n\nExamples:");
-  printf(" emmcdl -p ttyUSB0 -info\n");
-  printf(" emmcdl -p ttyUSB0 -gpt\n");
-  printf(" emmcdl -p ttyUSB0 -SkipWrite -SkipStorageInit -MemoryName ufs -f prog_emmc_firehose_8994_lite.mbn -x memory_configure.xml\n");
-  printf(" emmcdl -p ttyUSB0 -f prog_emmc_firehose_8994_lite.mbn -x rawprogram0.xml  -SetActivePartition 0\n");
-  printf(" emmcdl -p ttyUSB0 -f prog_emmc_firehose_8994_lite.mbn -x rawprogram0.xml -xd imagedir  -SetActivePartition 0\n");
-  printf(" emmcdl -p ttyUSB0 -f prog_emmc_firehose_8994_lite.mbn -ffu wp8.ffu\n");
-  printf(" emmcdl -p ttyUSB0 -f prog_emmc_firehose_8994_lite.mbn -d 0 1000 -o dump_1_1000.bin\n");
-  printf(" emmcdl -p ttyUSB0 -f prog_emmc_firehose_8994_lite.mbn -d SVRawDump -o svrawdump.bin\n");
-  printf(" emmcdl -p ttyUSB0 -f prog_emmc_firehose_8994_lite.mbn -b SBL1 c:\\temp\\sbl1.mbn\n");
-  printf(" emmcdl -p ttyUSB0 -f prog_emmc_firehose_8994_lite.mbn -e 0 100\n");
-  printf(" emmcdl -p ttyUSB0 -f prog_emmc_firehose_8994_lite.mbn -e MODEM_FSG\n");
-  printf(" emmcdl -p ttyUSB0 -f prog_emmc_firehose_8994_lite.mbn -raw 0x75 0x25 0x10\n");
+  printf(" emmcdl -info\n");
+  printf(" emmcdl -p 0 -gpt\n");
+  printf(" emmcdl -p 0 -SkipWrite -SkipStorageInit -MemoryName ufs -f prog_emmc_firehose_8994_lite.mbn -x memory_configure.xml\n");
+  printf(" emmcdl -p 0 -f prog_emmc_firehose_8994_lite.mbn -x rawprogram0.xml  -SetActivePartition 0\n");
+  printf(" emmcdl -p 0 -f prog_emmc_firehose_8994_lite.mbn -x rawprogram0.xml -xd imagedir  -SetActivePartition 0\n");
+  printf(" emmcdl -p 0 -f prog_emmc_firehose_8994_lite.mbn -ffu wp8.ffu\n");
+  printf(" emmcdl -p 0 -f prog_emmc_firehose_8994_lite.mbn -d 0 1000 -o dump_1_1000.bin\n");
+  printf(" emmcdl -p 0 -f prog_emmc_firehose_8994_lite.mbn -d SVRawDump -o svrawdump.bin\n");
+  printf(" emmcdl -p 0 -f prog_emmc_firehose_8994_lite.mbn -b SBL1 c:\\temp\\sbl1.mbn\n");
+  printf(" emmcdl -p 0 -f prog_emmc_firehose_8994_lite.mbn -e 0 100\n");
+  printf(" emmcdl -p 0 -f prog_emmc_firehose_8994_lite.mbn -e MODEM_FSG\n");
+  printf(" emmcdl -f prog_emmc_firehose_8994_lite.mbn -raw 0x75 0x25 0x10\n");
   return -1;
 }
 
@@ -113,7 +113,7 @@ void StringToByte(char **szSerialData, unsigned char *data, int len)
   }
 }
 
-int RawSerialSend(int dnum, char **szSerialData, int len)
+int RawSerialSend(char **szSerialData, int len)
 {
   int status = 0;
   unsigned char data[256];
@@ -687,12 +687,7 @@ int main(int argc, char * argv[])
       dwXMLCount++;
     }
     if (strcasecmp(argv[i], "-p") == 0) {
-      // Everyone wants to use format COM8 so detect this and accept this as well
-      if( strncasecmp(argv[i+1], "COM",3) == 0 ) {
-        dnum = atoi((argv[++i]+3));
-      } else {
-        dnum = atoi(argv[++i]);
-      }
+      dnum = atoi(argv[++i]);
     }
     if (strcasecmp(argv[i], "-s") == 0) {
       uiNumSectors = atoi(argv[++i]);
@@ -852,7 +847,7 @@ int main(int argc, char * argv[])
     }
   }
   setbuf(stdout, NULL);
-  status = m_port.Open(dnum);
+  status = m_port.Open();
   if (status < 0) goto end;
   status = DetectDeviceClass();
   if (status) {
@@ -926,8 +921,8 @@ int main(int argc, char * argv[])
     }
     break;
   case EMMC_CMD_RAW:
-    printf("Sending RAW data to COM%i\n",dnum);
-    status = RawSerialSend(dnum, szSerialData,argc-4);
+    printf("Sending RAW data to serial port\n");
+    status = RawSerialSend(szSerialData,argc-4);
     break;
   case EMMC_CMD_TEST:
     printf("Running performance tests disk %i\n",dnum);
