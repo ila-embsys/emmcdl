@@ -7,6 +7,7 @@ noinst_PROGRAMS = emmcdl
 emmcdl_LDADD = -lrt
 
 emmcdl_SOURCES = \
+               src/circular_buffer.cpp\
                src/crc.cpp\
                src/dload.cpp\
                src/emmcdl.cpp\
