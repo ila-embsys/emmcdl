@@ -59,6 +59,8 @@ int match_fastboot_with_serial(usb_ifc_info *info, const char *local_serial)
     // at the command line with the -s option.
     if (local_serial && (strcmp(local_serial, info->serial_number) != 0 &&
                    strcmp(local_serial, info->device_path) != 0)) return -1;
+
+	printf("Matched device: %04x:%04x\n", info->dev_vendor, info->dev_product);
     return 0;
 }
 
