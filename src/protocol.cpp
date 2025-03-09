@@ -138,11 +138,13 @@ int Protocol::ReadGPT(bool debug)
     return ENOMEM;
   }
 
-  status = ReadData((unsigned char *)&gpt_hdr, DISK_SECTOR_SIZE, DISK_SECTOR_SIZE, &bytesRead,0);
+  status = ReadData(buffer1, DISK_SECTOR_SIZE, DISK_SECTOR_SIZE, &bytesRead,0);
+  memcpy(&gpt_hdr, buffer1, sizeof(gpt_hdr));
   
   if ((status == 0) && (memcmp("EFI PART", gpt_hdr.signature, 8) == 0)) {
     if (debug) printf("\nSuccessfully found GPT partition\n");
-    status = ReadData((unsigned char *)gpt_entries, 2*DISK_SECTOR_SIZE, 32*DISK_SECTOR_SIZE, &bytesRead,0);
+    status = ReadData(buffer2, 2*DISK_SECTOR_SIZE, 32*DISK_SECTOR_SIZE, &bytesRead,0);
+    memcpy(gpt_entries, buffer2, sizeof(gpt_entry_t) * gpt_hdr.num_entries);
     if ((status == 0) && debug) {
       iconv_t conv = iconv_open("UTF-8", "UTF-16");
       for (int i = 0; (i < gpt_hdr.num_entries) && (i < 128); i++) {
