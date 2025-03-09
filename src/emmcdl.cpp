@@ -64,7 +64,7 @@ int PrintHelp()
   printf("       -e <start> <num>                 Erase disk from start sector for number of sectors\n");
   printf("       -e <PartName>                    Erase the entire partition specified\n");
   printf("       -s <sectors>                     Number of sectors in disk image\n");
-  printf("       -p <physycalpartition(disk)>     Physical partition to program to (for PhysicalDrive1 use 1)\n");
+  printf("       -p <physicalpartition(disk)>     Physical partition to program to (for PhysicalDrive1 use 1)\n");
   printf("       -o <filename>                    Output filename\n");
   printf("       [<-x <*.xml> [-xd <imgdir>]>...] Program XML file to output type -o (output) -p (port or disk)\n");
   printf("       -f <flash programmer>            Flash programmer to load to IMEM eg MPRG8960.hex\n");
