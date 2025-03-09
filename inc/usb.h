@@ -33,7 +33,20 @@
 extern "C" {
 #endif
 
-typedef struct usb_handle usb_handle;
+#define MAX_TRANSFER_SIZE   0x100000 // Taken from "protocol.h"
+
+#include <libusb-1.0/libusb.h>
+#include "circular_buffer.h"
+
+typedef struct {
+    // char fname[64];  // Optional, if you still need it
+    uint8_t ep_in;
+    uint8_t ep_out;
+    uint8_t interface_number;
+    libusb_device_handle *handle;
+    libusb_context *context;
+    circular_buffer *circbuf;
+} usb_handle;
 
 typedef struct usb_ifc_info usb_ifc_info;
 
@@ -64,8 +77,8 @@ typedef int (*ifc_match_func)(usb_ifc_info *ifc);
 
 usb_handle *usb_open(ifc_match_func callback);
 int usb_close(usb_handle *h);
-int usb_read(usb_handle *h, void *_data, int len);
-int usb_write(usb_handle *h, const void *_data, int len);
+int usb_read(usb_handle *h, void *_data, int len, int timeout);
+int usb_write(usb_handle *h, const void *_data, int len, int timeout);
 int usb_wait_for_disconnect(usb_handle *h);
 
 #if defined(__cplusplus)

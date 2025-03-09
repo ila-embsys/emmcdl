@@ -4,7 +4,7 @@ AM_CXXFLAGS = -std=c++11 -fno-rtti -fno-exceptions -pthread
 
 noinst_PROGRAMS = emmcdl
 
-emmcdl_LDADD = -lrt
+emmcdl_LDADD = -lrt -lusb-1.0
 
 emmcdl_SOURCES = \
                src/circular_buffer.cpp\
@@ -17,7 +17,7 @@ emmcdl_SOURCES = \
                src/partition.cpp\
                src/protocol.cpp\
                src/usbport.cpp\
-               src/usb_linux.c\
+               src/usb_libusb.c\
                src/sparse.cpp\
                src/xmlparser.cpp
 
