@@ -199,29 +199,6 @@ static int filter_usb_device(libusb_device *dev, const struct libusb_device_desc
     return -1;
 }
 
-static int check(const void *_desc, int len, uint8_t type, int size) {
-    if (!_desc) { // Check for null pointer
-        return -1;
-    }
-
-    const struct usb_descriptor_header *hdr = (const struct usb_descriptor_header *)_desc; // const correctness
-
-    if (len < size) {
-        return -1;
-    }
-    if (hdr->bLength < size) {
-        return -1;
-    }
-    if (hdr->bLength > len) {
-        return -1;
-    }
-    if (hdr->bDescriptorType != type) {
-        return -1;
-    }
-
-    return 0;
-}
-
 static usb_handle *find_usb_device(libusb_context *context, ifc_match_func callback) {
     usb_handle *usb = NULL;
     libusb_device **devs;
