@@ -6,6 +6,8 @@ stamp-h1
 autom4te.cache
 config.log
 config.status
+config.h.in
+config.guess
 emmcdl
 Makefile
 compile
@@ -20,3 +22,5 @@ config.h
 /depcomp
 /install-sh
 /missing
+*~
+*.sub
