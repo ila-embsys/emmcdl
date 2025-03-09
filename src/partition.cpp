@@ -524,7 +524,7 @@ int Partition::ProgramImage(Protocol *proto)
       status = proto->DumpDiskContents(pe.start_sector, pe.num_sectors, pe.filename, pe.physical_partition_number, NULL);
     }
     else if (pe.eCmd == CMD_ZEROOUT) {
-      status = proto->WipeDiskContents(pe.start_sector, pe.num_sectors, NULL);
+      status = proto->WipeDiskContents(pe.start_sector, pe.num_sectors, pe.physical_partition_number, NULL);
     }
 
     if (status != 0) {

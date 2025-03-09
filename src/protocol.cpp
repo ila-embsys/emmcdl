@@ -70,12 +70,12 @@ void Protocol::EnableVerbose()
   bVerbose = true;
 }
 
-int Protocol::LoadPartitionInfo(char *szPartName, PartitionEntry *pEntry)
+int Protocol::LoadPartitionInfo(uint8_t partNum, char *szPartName, PartitionEntry *pEntry)
 {
   int status = 0;
 
   // First of all read in the GPT information and see if it was successful
-  status = ReadGPT(bVerbose);
+  status = ReadGPT(partNum, bVerbose);
   if (status == 0) {
     // Check to make sure partition name is found
     status = ENOENT;
@@ -101,7 +101,7 @@ int Protocol::LoadPartitionInfo(char *szPartName, PartitionEntry *pEntry)
   return status;
 }
 
-int Protocol::WriteGPT(char *szPartName, char *szBinFile)
+int Protocol::WriteGPT(uint8_t partNum, char *szPartName, char *szBinFile)
 {
   int status = 0;
   PartitionEntry partEntry;
@@ -111,14 +111,14 @@ int Protocol::WriteGPT(char *szPartName, char *szBinFile)
     return ENOMEM;
   }
 
-  if (LoadPartitionInfo(szPartName, &partEntry) == 0){
+  if (LoadPartitionInfo(partNum, szPartName, &partEntry) == 0){
     printf("Flash %s bin to %s partition at start sector: %lu for sectors: %lu\n",
                           szBinFile, szPartName, partEntry.start_sector, partEntry.num_sectors);
     Partition partition;
     strcpy(partEntry.filename, szBinFile);
     partEntry.eCmd = CMD_PROGRAM;
-    sprintf(cmd_pkt, "<program SECTOR_SIZE_IN_BYTES=\"%i\" num_partition_sectors=\"%li\" physical_partition_number=\"0\" start_sector=\"%li\"/",
-                       DISK_SECTOR_SIZE, partEntry.num_sectors, partEntry.start_sector);
+    sprintf(cmd_pkt, "<program SECTOR_SIZE_IN_BYTES=\"%i\" num_partition_sectors=\"%li\" physical_partition_number=\"%i\" start_sector=\"%li\"/",
+                       DISK_SECTOR_SIZE, partEntry.num_sectors, partNum, partEntry.start_sector);
     status = partition.ProgramPartitionEntry(this, partEntry, cmd_pkt);
   }
 
@@ -127,7 +127,7 @@ int Protocol::WriteGPT(char *szPartName, char *szBinFile)
   return status;
 }
 
-int Protocol::ReadGPT(bool debug)
+int Protocol::ReadGPT(uint8_t partNum, bool debug)
 {
   int status = 0;
   uint32_t bytesRead;
@@ -138,12 +138,12 @@ int Protocol::ReadGPT(bool debug)
     return ENOMEM;
   }
 
-  status = ReadData(buffer1, DISK_SECTOR_SIZE, DISK_SECTOR_SIZE, &bytesRead,0);
+  status = ReadData(buffer1, DISK_SECTOR_SIZE, DISK_SECTOR_SIZE, &bytesRead,partNum);
   memcpy(&gpt_hdr, buffer1, sizeof(gpt_hdr));
   
   if ((status == 0) && (memcmp("EFI PART", gpt_hdr.signature, 8) == 0)) {
     if (debug) printf("\nSuccessfully found GPT partition\n");
-    status = ReadData(buffer2, 2*DISK_SECTOR_SIZE, 32*DISK_SECTOR_SIZE, &bytesRead,0);
+    status = ReadData(buffer2, 2*DISK_SECTOR_SIZE, 32*DISK_SECTOR_SIZE, &bytesRead,partNum);
     memcpy(gpt_entries, buffer2, sizeof(gpt_entry_t) * gpt_hdr.num_entries);
     if ((status == 0) && debug) {
       iconv_t conv = iconv_open("UTF-8", "UTF-16");
@@ -205,7 +205,7 @@ int Protocol::DumpDiskContents(uint64_t start_sector, uint64_t num_sectors, char
   // If there is a partition name provided load the info for the partition name
   if (szPartName != NULL) {
     PartitionEntry pe;
-    if (LoadPartitionInfo(szPartName, &pe) == 0) {
+    if (LoadPartitionInfo(partNum, szPartName, &pe) == 0) {
       start_sector = pe.start_sector;
       num_sectors = pe.num_sectors;
     }
@@ -231,7 +231,7 @@ int Protocol::DumpDiskContents(uint64_t start_sector, uint64_t num_sectors, char
   return status;
 }
 
-int Protocol::WipeDiskContents(uint64_t start_sector, uint64_t num_sectors, char *szPartName)
+int Protocol::WipeDiskContents(uint64_t start_sector, uint64_t num_sectors, uint8_t partNum, char *szPartName)
 {
   PartitionEntry pe;
   char *cmd_pkt;
@@ -240,7 +240,7 @@ int Protocol::WipeDiskContents(uint64_t start_sector, uint64_t num_sectors, char
   // If there is a partition name provided load the info for the partition name
   if (szPartName != NULL) {
     PartitionEntry pe;
-    if (LoadPartitionInfo(szPartName, &pe) == 0) {
+    if (LoadPartitionInfo(partNum, szPartName, &pe) == 0) {
       start_sector = pe.start_sector;
       num_sectors = pe.num_sectors;
     }
@@ -262,8 +262,8 @@ int Protocol::WipeDiskContents(uint64_t start_sector, uint64_t num_sectors, char
   pe.num_sectors = num_sectors;
   pe.eCmd = CMD_ERASE;
   pe.physical_partition_number = 0;  // By default the wipe disk only works on physical sector 0
-  sprintf(cmd_pkt, "<program SECTOR_SIZE_IN_BYTES=\"%i\" num_partition_sectors=\"%li\" physical_partition_number=\"0\" start_sector=\"%li\"/",
-                    DISK_SECTOR_SIZE, num_sectors, start_sector);
+  sprintf(cmd_pkt, "<program SECTOR_SIZE_IN_BYTES=\"%i\" num_partition_sectors=\"%li\" physical_partition_number=\"%i\" start_sector=\"%li\"/",
+                    DISK_SECTOR_SIZE, num_sectors, partNum, start_sector);
   Partition partition;
   status = partition.ProgramPartitionEntry(this,pe, cmd_pkt);
 

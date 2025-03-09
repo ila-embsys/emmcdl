@@ -38,10 +38,10 @@ public:
   virtual ~Protocol();
 
   int DumpDiskContents(uint64_t start_sector, uint64_t num_sectors, char *szOutFile, uint8_t partNum, char *szPartName);
-  int WipeDiskContents(uint64_t start_sector, uint64_t num_sectors, char *szPartName);
+  int WipeDiskContents(uint64_t start_sector, uint64_t num_sectors, uint8_t partNum, char *szPartName);
 
-  int ReadGPT(bool debug);
-  int WriteGPT(char *szPartName, char *szBinFile);
+  int ReadGPT(uint8_t partNum, bool debug);
+  int WriteGPT(uint8_t partNum, char *szPartName, char *szBinFile);
   void EnableVerbose(void);
   int GetDiskSectorSize(void);
   void SetDiskSectorSize(int size);
@@ -58,7 +58,7 @@ public:
 
 protected:
 
-  int LoadPartitionInfo(char *szPartName, PartitionEntry *pEntry);
+  int LoadPartitionInfo(uint8_t partNum, char *szPartName, PartitionEntry *pEntry);
   void Log(const char *str, ...);
 
   gpt_header_t gpt_hdr;

@@ -97,6 +97,11 @@ int PrintHelp()
   return -1;
 }
 
+int PrintRequirePhysPart() {
+  printf("Operation skipped. Specify physical partition number by '-p' flag\n");
+  return -1;
+}
+
 void StringToByte(char **szSerialData, unsigned char *data, int len)
 {
   for(int i=0; i < len; i++) {
@@ -180,7 +185,7 @@ int EraseDisk(uint64_t start, uint64_t num, int dnum, char *szPartName)
 	  status = fh.ConnectToFlashProg(&m_cfg);
 	  if (status != 0) return status;
 	  printf("Connected to flash programmer, starting download\n");
-	  fh.WipeDiskContents(start, num, szPartName);
+	  fh.WipeDiskContents(start, num, dnum, szPartName);
   } else {
     DiskWriter dw;
     // Initialize and print disk list
@@ -190,7 +195,7 @@ int EraseDisk(uint64_t start, uint64_t num, int dnum, char *szPartName)
     if( status == 0 ) {
       printf("Successfully opened volume\n");
       printf("Erase at start_sector %lu: num_sectors: %lu\n",start, num);
-      status = dw.WipeDiskContents( start,num, szPartName );
+      status = dw.WipeDiskContents( start,num, dnum, szPartName );
     }
     dw.CloseDevice();
   }
@@ -281,14 +286,14 @@ int ReadGPT(int dnum)
     status = fh.ConnectToFlashProg(&m_cfg);
     if( status != 0 ) return status;
     printf("Connected to flash programmer, starting download\n");
-    fh.ReadGPT(true);
+    fh.ReadGPT(dnum, true);
   } else {
     DiskWriter dw;
     dw.InitDiskList();
     status = dw.OpenDevice(dnum);
   
     if( status == 0 ) {
-      status = dw.ReadGPT(true);
+      status = dw.ReadGPT(dnum, true);
     }
 
     dw.CloseDevice();
@@ -307,14 +312,14 @@ int WriteGPT(int dnum, char *szPartName, char *szBinFile)
     status = fh.ConnectToFlashProg(&m_cfg);
     if (status != 0) return status;
     printf("Connected to flash programmer, starting download\n");
-    status = fh.WriteGPT(szPartName, szBinFile);
+    status = fh.WriteGPT(dnum, szPartName, szBinFile);
   }
   else {
     DiskWriter dw;
     dw.InitDiskList();
     status = dw.OpenDevice(dnum);
     if (status == 0) {
-      status = dw.WriteGPT(szPartName, szBinFile);
+      status = dw.WriteGPT(dnum, szPartName, szBinFile);
     }
     dw.CloseDevice();
   }
@@ -778,7 +783,7 @@ int main(int argc, char * argv[])
 
     if (strcasecmp(argv[i], "-v") == 0) {
       if( (i+1) < argc ) {
-        m_verbose = true;
+      m_verbose = true;
       } else {
         PrintHelp();
       }
@@ -879,7 +884,8 @@ int main(int argc, char * argv[])
   // If there is a special command execute it
   switch(cmd) {
   case EMMC_CMD_DUMP:
-    if( szOutputFile && (dnum >= 0)) {
+    if (dnum < 0) { return PrintRequirePhysPart(); }
+    if( szOutputFile ) {
       printf("Dumping data to file %s\n",szOutputFile);
       status = RawDiskDump(uiStartSector, uiNumSectors, szOutputFile, dnum, szPartName);
     } else {
@@ -890,6 +896,7 @@ int main(int argc, char * argv[])
     status = LogDump(uiStartSector, uiNumSectors);
     break;
   case EMMC_CMD_ERASE:
+    if (dnum < 0) { return PrintRequirePhysPart(); }
     printf("Erasing Disk\n");
     status = EraseDisk(uiStartSector,uiNumSectors,dnum, szPartName);
     break;
@@ -910,21 +917,22 @@ int main(int argc, char * argv[])
       printf("EMERGENCY Programming image\n");
       status = EDownloadProgram(szSingleImage, szXMLFile, szimgDir);
     } else {
+      if (dnum < 0) { return PrintRequirePhysPart(); }
       printf("Programming image\n");
       status = RawDiskProgram(szXMLFile, szOutputFile, dnum);
     }
     break;
   case EMMC_CMD_WIPE:
     printf("Wipping Disk\n");
-    if( dnum > 0 ) {
-      status = WipeDisk(dnum);
-    }
+    if (dnum < 0) { return PrintRequirePhysPart(); }
+    status = WipeDisk(dnum);
     break;
   case EMMC_CMD_RAW:
     printf("Sending RAW data to serial port\n");
     status = RawSerialSend(szSerialData,argc-4);
     break;
   case EMMC_CMD_TEST:
+    if (dnum < 0) { return PrintRequirePhysPart(); }
     printf("Running performance tests disk %i\n",dnum);
     status = RawDiskTest(dnum,uiOffset);
     break;
@@ -944,7 +952,8 @@ int main(int argc, char * argv[])
     }
 	break;
   case EMMC_CMD_WRITE_GPT:
-    if( (szSingleImage != NULL) && (szPartName != NULL) && (dnum >=0) ) {
+    if (dnum < 0) { return PrintRequirePhysPart(); }
+    if( (szSingleImage != NULL) && (szPartName != NULL) ) {
       status = WriteGPT(dnum, szPartName, szSingleImage);
     }
     break;
@@ -958,6 +967,7 @@ int main(int argc, char * argv[])
     break;
   case EMMC_CMD_GPT:
     // Read and dump GPT information from given disk
+    if (dnum < 0) { return PrintRequirePhysPart(); }
     status = ReadGPT(dnum);
     break;
   case EMMC_CMD_INFO:
@@ -971,6 +981,6 @@ int main(int argc, char * argv[])
 
 end:
   // Display the error message and exit the process
-  printf("\nStatus: %i %s\n",status, (char*)strerror(status));
+  printf("\nStatus: %i %s\n",status, (char*)strerror(abs(status)));
   return status;
 }
