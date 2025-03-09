@@ -7,8 +7,9 @@
 void cb_init(circular_buffer *cb, size_t capacity, size_t sz)
 {
     cb->buffer = malloc(capacity * sz);
-    if(cb->buffer == NULL)
+    if(cb->buffer == NULL){
         // handle error
+    }
     cb->buffer_end = (char *)cb->buffer + capacity * sz;
     cb->capacity = capacity;
     cb->count = 0;
