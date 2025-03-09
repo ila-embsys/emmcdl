@@ -133,41 +133,44 @@ int Protocol::ReadGPT(bool debug)
   uint32_t bytesRead;
   gpt_header_t gpt_hdr;
   gpt_entries = (gpt_entry_t*)malloc(sizeof(gpt_entry_t)* 128);
+  int part_num = 0;
 
   if (gpt_entries == NULL) {
     return ENOMEM;
   }
 
-  status = ReadData(buffer1, DISK_SECTOR_SIZE, DISK_SECTOR_SIZE, &bytesRead,0);
-  memcpy(&gpt_hdr, buffer1, sizeof(gpt_hdr));
-  
-  if ((status == 0) && (memcmp("EFI PART", gpt_hdr.signature, 8) == 0)) {
-    if (debug) printf("\nSuccessfully found GPT partition\n");
-    status = ReadData(buffer2, 2*DISK_SECTOR_SIZE, 32*DISK_SECTOR_SIZE, &bytesRead,0);
-    memcpy(gpt_entries, buffer2, sizeof(gpt_entry_t) * gpt_hdr.num_entries);
-    if ((status == 0) && debug) {
-      iconv_t conv = iconv_open("UTF-8", "UTF-16");
-      for (int i = 0; (i < gpt_hdr.num_entries) && (i < 128); i++) {
-        if (gpt_entries[i].first_lba > 0) {
-          char part_name[36];
-          char* src = gpt_entries[i].part_name;
-	  size_t srclen = 72;
-          char* dst = part_name;
-	  size_t dstlen = 36;
-	  iconv(conv, &src, &srclen, &dst, &dstlen);
-          printf("%2i. Partition Name: %-36s Start LBA: 0x%.8lx Size in LBA: 0x%.8lx\n",
-               i + 1, part_name, gpt_entries[i].first_lba, gpt_entries[i].last_lba - gpt_entries[i].first_lba + 1);
+  do {
+    status = ReadData(buffer1, DISK_SECTOR_SIZE, DISK_SECTOR_SIZE, &bytesRead, part_num);
+    memcpy(&gpt_hdr, buffer1, sizeof(gpt_hdr));
+    if ((status == 0) && (memcmp("EFI PART", gpt_hdr.signature, 8) == 0)) {
+      if (debug) printf("\nSuccessfully found GPT on physical partition '%d'\n", part_num);
+      status = ReadData(buffer2, 2*DISK_SECTOR_SIZE, 32*DISK_SECTOR_SIZE, &bytesRead, part_num);
+      memcpy(gpt_entries, buffer2, sizeof(gpt_entry_t) * gpt_hdr.num_entries);
+      if ((status == 0) && debug) {
+        iconv_t conv = iconv_open("UTF-8", "UTF-16");
+        for (int i = 0; (i < gpt_hdr.num_entries) && (i < 128); i++) {
+          if (gpt_entries[i].first_lba > 0) {
+            char part_name[36];
+            char* src = gpt_entries[i].part_name;
+      size_t srclen = 72;
+            char* dst = part_name;
+      size_t dstlen = 36;
+      iconv(conv, &src, &srclen, &dst, &dstlen);
+            printf("%2i. Partition Name: %-36s Start LBA: 0x%.8lx Size in LBA: 0x%.8lx\n",
+                i + 1, part_name, gpt_entries[i].first_lba, gpt_entries[i].last_lba - gpt_entries[i].first_lba + 1);
+          }
         }
+        iconv_close(conv);
       }
-      iconv_close(conv);
     }
-  }
-  else {
-    if (debug) Log("\nNo valid GPT found");
-    free(gpt_entries);
-    gpt_entries = NULL;
-    status = ERROR_INVALID_DATA;
-  }
+    else {
+      if (debug) Log("\nNo valid GPT found on request physical partition: '%d'", part_num);
+      free(gpt_entries);
+      gpt_entries = NULL;
+      status = ERROR_INVALID_DATA;
+    }
+    part_num++;
+  } while (status != ERROR_INVALID_DATA);
 
   return status;
 }
