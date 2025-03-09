@@ -140,12 +140,10 @@ int SerialPort::Write(unsigned char *data, uint32_t length) {
     r = usb_write(hPort, data, length, to_ms);
     if(r < 0) {
         sprintf(ERROR, "data transfer failure (%s)", strerror(errno));
-        usb_close(hPort);
         return -1;
     }
     if(r != ((int) length)) {
         sprintf(ERROR, "data transfer failure (short transfer)");
-        usb_close(hPort);
         return -1;
     }
 
@@ -157,7 +155,6 @@ int SerialPort::Read(unsigned char *data, uint32_t *length) {
         r = usb_read(hPort, data, *length, to_ms);
         if(r < 0) {
             sprintf(ERROR, "status read failed (%s)", strerror(errno));
-            usb_close(hPort);
             return -1;
         }
 
