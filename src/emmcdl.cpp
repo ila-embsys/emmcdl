@@ -782,11 +782,8 @@ int main(int argc, char * argv[])
     }
 
     if (strcasecmp(argv[i], "-v") == 0) {
-      if( (i+1) < argc ) {
       m_verbose = true;
-      } else {
-        PrintHelp();
-      }
+      break;
     }
 
     if (strcasecmp(argv[i], "-splitffu") == 0) {
