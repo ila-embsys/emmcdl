@@ -482,8 +482,8 @@ int Firehose::ReadData(unsigned char *readBuffer, int64_t readOffset, uint32_t r
 
   // Wait until device returns with ACK or NAK
   //<- lucha M because the TCL comment the respond
-  //while ((status = ReadStatus()) == EBUSY);
-  //if (status == ERROR_INVALID_DATA) return status;
+  while ((status = ReadStatus()) == EBUSY);
+  if (status == ERROR_INVALID_DATA) return status;
   //-> lucha M
 
   struct timespec ts;
