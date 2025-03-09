@@ -149,7 +149,7 @@ int SerialPort::Write(unsigned char *data, uint32_t length) {
         return -1;
     }
 
-    return r;
+    return 0;
 }
 
 int SerialPort::Read(unsigned char *data, uint32_t *length) {
@@ -162,7 +162,7 @@ int SerialPort::Read(unsigned char *data, uint32_t *length) {
         }
 
 	*length = r;
-	return r ? 0 : -1;
+	return 0;
 }
 
 int64_t SerialPort::InputBufferCount(){
