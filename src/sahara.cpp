@@ -353,7 +353,7 @@ int Sahara::PblHack(void)
 
   sport->SetTimeout(10);
   status = sport->Read((unsigned char *)&cmd_rdy, &bytesRead);
-  if (status != 0 || bytesRead == 0) {
+  if (status == 0 || bytesRead == 0) {
     // Assume there was a data toggle issue and send the mode switch command
     return ModeSwitch(SAHARA_MODE_IMAGE_TX_PENDING);
   } else if (cmd_rdy.cmd != SAHARA_CMD_READY) {
