@@ -39,7 +39,7 @@ SerialPort::SerialPort() {
 
 SerialPort::~SerialPort() {
 	if (hPort) {
-		//TODO
+		Close();
 	}
 	if (HDLCBuf)
 		free(HDLCBuf);
@@ -127,7 +127,7 @@ int SerialPort::Open(int port) {
 
 int SerialPort::Close() {
 	if (hPort) {
-           //TODO
+        usb_close(hPort);
 	}
 
 	hPort = NULL;
