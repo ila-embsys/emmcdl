@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "maelvalais.autoconf",
+        "ms-vscode.cpptools",
+        "mhutchie.git-graph",
+        "ms-vscode.hexeditor",
+        "ms-vscode.makefile-tools"
+    ]
+}
