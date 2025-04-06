@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = subdir-objects
 AM_CPPFLAGS =-I$(top_srcdir)/inc
-AM_CXXFLAGS = -std=gnu++11 -fno-rtti -fno-exceptions -pthread
+AM_CXXFLAGS = -std=gnu++11 -pthread
 
 noinst_PROGRAMS = emmcdl
 
