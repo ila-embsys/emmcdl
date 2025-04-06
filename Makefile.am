@@ -1,6 +1,7 @@
 AUTOMAKE_OPTIONS = subdir-objects
-AM_CPPFLAGS =-I$(top_srcdir)/inc
-AM_CXXFLAGS = -std=gnu++11 -pthread
+AM_CPPFLAGS =-I$(top_srcdir)/inc $(EMMCDL_CPPFLAGS) 
+AM_CXXFLAGS = -std=gnu++11 -pthread $(EMMCDL_CXXFLAGS) 
+AM_LDFLAGS = $(EMMCDL_LDFLAGS)
 
 noinst_PROGRAMS = emmcdl
 
